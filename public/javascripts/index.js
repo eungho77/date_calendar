@@ -1,36 +1,3 @@
-var calendar = new tui.Calendar('#calendar', {
-    defaultView: 'month',
-    template: templates,
-    useCreationPopup: true,
-    useDetailPopup: true,
-    calendars: [
-        {
-            id: '1',
-            name: '송정아',
-            color: '#ffffff',
-            bgColor: '#9e5fff',
-            dragBgColor: '#9e5fff',
-            borderColor: '#9e5fff'
-        },
-        {
-            id: '2',
-            name: '김응호',
-            color: '#00a9ff',
-            bgColor: '#00a9ff',
-            dragBgColor: '#00a9ff',
-            borderColor: '#00a9ff'
-        },
-        {
-            id: '3',
-            name: '데이트♥',
-            color: '#ff5583',
-            bgColor: '#ff5583',
-            dragBgColor: '#ff5583',
-            borderColor: '#ff5583'
-        }
-    ]
-});
-
 var templates = {
     milestone: function(schedule) {
         return '<span class="calendar-font-icon ic-milestone-b"></span> <span style="background-color: ' + schedule.bgColor + '">' + schedule.title + '</span>';
@@ -45,7 +12,8 @@ var templates = {
         return '<span class="tui-full-calendar-left-content">TASK</span>';
     },
     allday: function(schedule) {
-        return getTimeTemplate(schedule, true);
+        console.log(schedule)
+        return schedule.title;
     },
     alldayTitle: function() {
         return '<span class="tui-full-calendar-left-content">ALL DAY</span>';
@@ -195,6 +163,12 @@ var templates = {
     popupIsAllDay: function() {
         return 'All Day';
     },
+    popupStateFree: function() {
+        return 'Free';
+    },
+    popupStateBusy: function() {
+        return 'Busy';
+    },
     titlePlaceholder: function() {
         return 'Subject';
     },
@@ -244,17 +218,49 @@ var templates = {
     popupDelete: function() {
         return 'Delete';
     }
-}
+};
+
+var calendar = new tui.Calendar('#calendar', {
+    defaultView: 'month',
+    template: templates,
+    useCreationPopup: true,
+    useDetailPopup: true,
+    calendars: [
+        {
+            id: '1',
+            name: '송정아',
+            color: '#000000',
+            bgColor: '#aaffd5',
+            dragBgColor: '#aaffd5',
+            borderColor: '#aaffd5'
+        },
+        {
+            id: '2',
+            name: '김응호',
+            color: '#000000',
+            bgColor: '#00a9ff',
+            dragBgColor: '#00a9ff',
+            borderColor: '#00a9ff'
+        },
+        {
+            id: '3',
+            name: '데이트♥',
+            color: '#000000',
+            bgColor: '#ff0000',
+            dragBgColor: '#ff0000',
+            borderColor: '#ff0000'
+        }
+    ]
+});
 
 calendar.on('afterRenderSchedule', function(event){
     console.log('afterRenderSchedule')
 })
 
 calendar.on('beforeCreateSchedule', event => {
-    console.log(calendar)
-    console.log(event)
-
     const schedule = {
+        id: String(Math.random() * 100000000000000000),
+        calendarId: event.calendarId,
         title: event.title,
         category: event.isAllDay ? 'allday' : 'time',
         start: event.start,
@@ -262,26 +268,15 @@ calendar.on('beforeCreateSchedule', event => {
         isAllDay: event.isAllDay,
         location: event.location
     }
-
     console.log(schedule)
-
     calendar.createSchedules([schedule]);
-
-    // if (triggerEventName === 'click') {
-    //     // open writing simple schedule popup
-    //     schedule = {...};
-    // } else if (triggerEventName === 'dblclick') {
-    //     // open writing detail schedule popup
-    //     schedule = {...};
-    // }
-
     console.log('스케줄 등록 완료')
 });
 
 calendar.on('beforeDeleteSchedule', function(event) {
     var schedule = event.schedule;
 
-    console.log('The schedule is removed.', schedule);
+    calendar.deleteSchedule(schedule.id, schedule.calendarId);
 });
 
 calendar.on('beforeUpdateSchedule', function(event) {
@@ -302,23 +297,6 @@ calendar.on('clickDayname', function(event) {
 
 calendar.on('clickMore', function(event) {
     console.log('clickMore', event.date, event.target);
-});
-
-calendar.on('clickSchedule', function(event) {
-    console.log('clickSchedule')
-    var schedule = event.schedule;
-
-    if (lastClickSchedule) {
-        calendar.updateSchedule(lastClickSchedule.id, lastClickSchedule.calendarId, {
-            isFocused: false
-        });
-    }
-    calendar.updateSchedule(schedule.id, schedule.calendarId, {
-        isFocused: true
-    });
-
-    lastClickSchedule = schedule;
-    // open detail view
 });
 
 calendar.on('clickTimezonesCollapseBtn', function(timezonesCollapsed) {
