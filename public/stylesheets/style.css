@@ -1,8 +1,24 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+#menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.move-today {
+  border: 1px solid gray;
+}
+
+.render-range, .move-today {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.render-range, .move-day {
+  font-weight: bold;
+  font-size: 20px;
 }
