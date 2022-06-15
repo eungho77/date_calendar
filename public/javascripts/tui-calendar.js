@@ -1,3 +1,15 @@
+$.ajaxSettings.async = true
+let category = ""
+
+$.ajax({
+    url : '/api/category',
+    async : false,         // false 일 경우 동기 요청으로 변경
+    type : 'POST',   // POST, GET, PUT
+    dataType : 'json'          // text, xml, json, script, html
+}).done((data) => {
+    category = data
+})
+
 var templates = {
     milestone: function(schedule) {
         return '<span class="calendar-font-icon ic-milestone-b"></span> <span style="background-color: ' + schedule.bgColor + '">' + schedule.title + '</span>';
@@ -161,7 +173,7 @@ var templates = {
         return templates.join('');
     },
     popupIsAllDay: function() {
-        return 'All Day';
+        return 'ALL';
     },
     popupStateFree: function() {
         return 'Free';
@@ -170,10 +182,10 @@ var templates = {
         return 'Busy';
     },
     titlePlaceholder: function() {
-        return 'Subject';
+        return '할 일';
     },
     locationPlaceholder: function() {
-        return 'Location';
+        return '위치';
     },
     startDatePlaceholder: function() {
         return 'Start date';
@@ -182,23 +194,27 @@ var templates = {
         return 'End date';
     },
     popupSave: function() {
-        return 'Save';
+        return '저장';
     },
     popupUpdate: function() {
-        return 'Update';
+        return '업데이트';
     },
     popupDetailDate: function(isAllDay, start, end) {
-        var isSameDate = moment(start).isSame(end);
-        var endFormat = (isSameDate ? '' : 'YYYY.MM.DD ') + 'hh:mm a';
+        let result = "";
+
+        const detail_start = new Date(start);
+        const detail_end = new Date(end);
 
         if (isAllDay) {
-            return moment(start).format('YYYY.MM.DD') + (isSameDate ? '' : ' - ' + moment(end).format('YYYY.MM.DD'));
+            result = detail_start.getFullYear() + "." + (detail_start.getMonth() + 1) + "." + detail_start.getDate() + " ~ " + detail_end.getFullYear() + "." + (detail_end.getMonth() + 1) + "." + detail_end.getDate();
+        } else {
+            result = detail_start.getFullYear() + "." + (detail_start.getMonth() + 1) + "." + detail_start.getDate() + " " + detail_start.getHours() + ":" + detail_start.getMinutes() + " ~ " + detail_end.getHours() + ":" + detail_end.getMinutes()
         }
 
-        return (moment(start).format('YYYY.MM.DD hh:mm a') + ' - ' + moment(end).format(endFormat));
+        return result;
     },
     popupDetailLocation: function(schedule) {
-        return 'Location : ' + schedule.location;
+        return '장소 : ' + schedule.location;
     },
     popupDetailUser: function(schedule) {
         return 'User : ' + (schedule.attendees || []).join(', ');
@@ -213,10 +229,10 @@ var templates = {
         return 'Body : ' + schedule.body;
     },
     popupEdit: function() {
-        return 'Edit';
+        return '수정';
     },
     popupDelete: function() {
-        return 'Delete';
+        return '삭제';
     }
 };
 
@@ -225,32 +241,7 @@ var calendar = new tui.Calendar('#calendar', {
     template: templates,
     useCreationPopup: true,
     useDetailPopup: true,
-    calendars: [
-        {
-            id: '1',
-            name: '송정아',
-            color: '#000000',
-            bgColor: '#aaffd5',
-            dragBgColor: '#aaffd5',
-            borderColor: '#aaffd5'
-        },
-        {
-            id: '2',
-            name: '김응호',
-            color: '#000000',
-            bgColor: '#00a9ff',
-            dragBgColor: '#00a9ff',
-            borderColor: '#00a9ff'
-        },
-        {
-            id: '3',
-            name: '데이트♥',
-            color: '#000000',
-            bgColor: '#ff0000',
-            dragBgColor: '#ff0000',
-            borderColor: '#ff0000'
-        }
-    ]
+    calendars: category
 });
 
 calendar.on('afterRenderSchedule', function(event){
@@ -259,18 +250,23 @@ calendar.on('afterRenderSchedule', function(event){
 
 calendar.on('beforeCreateSchedule', event => {
     const schedule = {
-        id: String(Math.random() * 100000000000000000),
+        id: String(Math.random() * 9999999999999999999999999999999999999999999),
         calendarId: event.calendarId,
         title: event.title,
         category: event.isAllDay ? 'allday' : 'time',
-        start: event.start,
-        end: event.end,
+        start: new Date(event.start).toString(),
+        end: new Date(event.end).toString(),
         isAllDay: event.isAllDay,
         location: event.location
     }
-    console.log(schedule)
-    calendar.createSchedules([schedule]);
-    console.log('스케줄 등록 완료')
+
+    $.post('/api/calendar/insert', schedule, function(data){
+        if(data.result) {
+            calendar.createSchedules([schedule]);
+        }
+    })
+
+    // console.log('스케줄 등록 완료')
 });
 
 calendar.on('beforeDeleteSchedule', function(event) {
