@@ -1,16 +1,23 @@
-$.ajaxSettings.async = true
 let category = ""
+let calendar_list = ""
 
 $.ajax({
     url : '/api/category',
     async : false,         // false 일 경우 동기 요청으로 변경
     type : 'POST',   // POST, GET, PUT
     dataType : 'json'          // text, xml, json, script, html
-}).done((data) => {
-    category = data
+}).done((result) => {
+    console.log(result)
+
+    if(result.mode) {
+        category = result.data
+    }
 })
 
-var templates = {
+console.log(category)
+console.log(calendar_list)
+
+const templates = {
     milestone: function(schedule) {
         return '<span class="calendar-font-icon ic-milestone-b"></span> <span style="background-color: ' + schedule.bgColor + '">' + schedule.title + '</span>';
     },
@@ -236,7 +243,7 @@ var templates = {
     }
 };
 
-var calendar = new tui.Calendar('#calendar', {
+const calendar = new tui.Calendar('#calendar', {
     defaultView: 'month',
     template: templates,
     useCreationPopup: true,
@@ -244,35 +251,67 @@ var calendar = new tui.Calendar('#calendar', {
     calendars: category
 });
 
+$.ajax({
+    url : '/api/calendar',
+    async : false,         // false 일 경우 동기 요청으로 변경
+    type : 'POST',   // POST, GET, PUT
+    dataType : 'json'          // text, xml, json, script, html
+}).done((result) => {
+    if(result.mode) {
+        calendar.createSchedules(result.data)
+        console.log("스케줄 조회 완료")
+    }
+})
+
 calendar.on('afterRenderSchedule', function(event){
     console.log('afterRenderSchedule')
 })
 
 calendar.on('beforeCreateSchedule', event => {
     const schedule = {
-        id: String(Math.random() * 9999999999999999999999999999999999999999999),
+        id: Math.floor(Math.random() * 2147483647),
         calendarId: event.calendarId,
         title: event.title,
-        category: event.isAllDay ? 'allday' : 'time',
+        category: event.isAllDay ? "allday" : "time",
         start: new Date(event.start).toString(),
         end: new Date(event.end).toString(),
-        isAllDay: event.isAllDay,
+        isAllDay: event.isAllDay ? true : false,
         location: event.location
     }
 
-    $.post('/api/calendar/insert', schedule, function(data){
-        if(data.result) {
+    const param = {
+        id: Math.floor(Math.random() * 2147483647),
+        calendarId: event.calendarId,
+        title: event.title,
+        category: event.isAllDay ? "allday" : "time",
+        start: new Date(event.start).toString(),
+        end: new Date(event.end).toString(),
+        isAllDay: schedule.isAllDay ? "종일" : "당일",
+        location: event.location
+    }
+
+    $.post('/api/calendar/insert', param, function(result){
+        if(result.mode) {
             calendar.createSchedules([schedule]);
+            console.log(result.text)
+        } else {
+            console.log("등록 실패")
         }
     })
-
-    // console.log('스케줄 등록 완료')
 });
 
 calendar.on('beforeDeleteSchedule', function(event) {
-    var schedule = event.schedule;
+    const schedule = event.schedule;
+    const param = {
+        id : schedule.id
+    }
 
-    calendar.deleteSchedule(schedule.id, schedule.calendarId);
+    $.post('/api/calendar/delete', param, function(result){
+        if(result.mode) {
+            calendar.deleteSchedule(schedule.id, schedule.calendarId);
+            console.log(result.text)
+        }
+    })
 });
 
 calendar.on('beforeUpdateSchedule', function(event) {

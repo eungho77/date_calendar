@@ -3,12 +3,17 @@
 <mapper namespace="calendar">
     <select id="select">
         select
-            *
-        from
-            calendar
+            a.id, calendarId, category, title, location,
+            start, end, isAllDay, name, color, bgColor, dragBgColor, borderColor
+        from calendar a join category b
+            on a.calendarId = b.id
     </select>
 
     <insert id="insert">
-        insert into calendar values ()
+        insert into calendar values (#{id}, #{calendarId}, #{category}, #{title}, #{location}, #{start}, #{end}, #{isAllDay})
     </insert>
+
+    <delete id="delete">
+        delete from calendar where id = #{id}
+    </delete>
 </mapper>
