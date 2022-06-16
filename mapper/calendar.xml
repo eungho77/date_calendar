@@ -13,6 +13,18 @@
         insert into calendar values (#{id}, #{calendarId}, #{category}, #{title}, #{location}, #{start}, #{end}, #{isAllDay})
     </insert>
 
+    <insert id="update">
+        update calendar set
+            calendarId = #{calendarId},
+            category = #{category},
+            title = #{title},
+            location = #{location},
+            start = #{start},
+            end = #{end},
+            isAllDay = #{isAllDay}
+        where id = #{id}
+    </insert>
+
     <delete id="delete">
         delete from calendar where id = #{id}
     </delete>

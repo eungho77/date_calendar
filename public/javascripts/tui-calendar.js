@@ -1,5 +1,4 @@
 let category = ""
-let calendar_list = ""
 
 $.ajax({
     url : '/api/category',
@@ -15,7 +14,6 @@ $.ajax({
 })
 
 console.log(category)
-console.log(calendar_list)
 
 const templates = {
     milestone: function(schedule) {
@@ -268,6 +266,7 @@ calendar.on('afterRenderSchedule', function(event){
 })
 
 calendar.on('beforeCreateSchedule', event => {
+    let calendar_id = "";
     const schedule = {
         id: Math.floor(Math.random() * 2147483647),
         calendarId: event.calendarId,
@@ -279,8 +278,25 @@ calendar.on('beforeCreateSchedule', event => {
         location: event.location
     }
 
+    // 게시물 id 중복 x
+    $.ajax({
+        url : '/api/calendar',
+        async : false,         // false 일 경우 동기 요청으로 변경
+        type : 'POST',   // POST, GET, PUT
+        dataType : 'json'          // text, xml, json, script, html
+    }).done((result) => {
+        if(result.mode) {
+            calendar_id = Math.floor(Math.random() * 2147483647)
+            for(let a of result.data) {
+                if(a.id === calendar_id) {
+                    calendar_id = Math.floor(Math.random() * 2147483647)
+                }
+            }
+        }
+    })
+
     const param = {
-        id: Math.floor(Math.random() * 2147483647),
+        id: calendar_id,
         calendarId: event.calendarId,
         title: event.title,
         category: event.isAllDay ? "allday" : "time",

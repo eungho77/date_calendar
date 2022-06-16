@@ -90,7 +90,28 @@ router.post('/api/calendar/insert', function(req, res, next) {
   console.log(result.sql)
 });
 
-// calendar insert api
+// calendar update api
+router.post('/api/calendar/update', function(req, res, next) {
+  let param = {};
+
+  mybatisMapper.createMapper([ Fileurl.url + '/mapper/calendar.xml' ]);
+  const query = mybatisMapper.getStatement('calendar', 'update', req.body, format);
+
+  const result = connection.query(query, (err, rows, fields) => {
+    if(!err) {
+      param.mode = true
+      param.text = "스케줄 수정 완료"
+
+      res.send(param)
+    } else
+      console.error(err)
+  })
+
+  console.log("/api/calendar/update")
+  console.log(result.sql)
+});
+
+// calendar delete api
 router.post('/api/calendar/delete', function(req, res, next) {
   let param = {};
 
@@ -107,7 +128,7 @@ router.post('/api/calendar/delete', function(req, res, next) {
       console.error(err)
   })
 
-  console.log("/api/calendar/insert")
+  console.log("/api/calendar/delete")
   console.log(result.sql)
 });
 
