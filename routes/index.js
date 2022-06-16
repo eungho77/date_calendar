@@ -71,7 +71,6 @@ router.post('/api/calendar', function(req, res, next) {
 // calendar insert api
 router.post('/api/calendar/insert', function(req, res, next) {
   let param = {};
-  console.log(req.body)
 
   mybatisMapper.createMapper([ Fileurl.url + '/mapper/calendar.xml' ]);
   const query = mybatisMapper.getStatement('calendar', 'insert', req.body, format);
@@ -93,6 +92,7 @@ router.post('/api/calendar/insert', function(req, res, next) {
 // calendar update api
 router.post('/api/calendar/update', function(req, res, next) {
   let param = {};
+  console.log(req.body)
 
   mybatisMapper.createMapper([ Fileurl.url + '/mapper/calendar.xml' ]);
   const query = mybatisMapper.getStatement('calendar', 'update', req.body, format);

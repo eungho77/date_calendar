@@ -14,14 +14,30 @@
     </insert>
 
     <insert id="update">
-        update calendar set
-            calendarId = #{calendarId},
-            category = #{category},
-            title = #{title},
-            location = #{location},
-            start = #{start},
-            end = #{end},
-            isAllDay = #{isAllDay}
+        update calendar
+        <set>
+            <if test="calendarId != ''" >
+                calendarId = #{calendarId},
+            </if>
+            <if test="category != ''" >
+                category = #{category},
+            </if>
+            <if test="title != ''" >
+                title = #{title},
+            </if>
+            <if test="location != ''" >
+                location = #{location},
+            </if>
+            <if test="start != ''" >
+                start = #{start},
+            </if>
+            <if test="end != ''" >
+                end = #{end},
+            </if>
+            <if test="isAllDay != ''" >
+                isAllDay = #{isAllDay},
+            </if>
+        </set>
         where id = #{id}
     </insert>
 

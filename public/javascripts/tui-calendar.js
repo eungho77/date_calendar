@@ -6,14 +6,13 @@ $.ajax({
     type : 'POST',   // POST, GET, PUT
     dataType : 'json'          // text, xml, json, script, html
 }).done((result) => {
-    console.log(result)
-
     if(result.mode) {
         category = result.data
+        console.log("카데고리 조회 완료")
     }
 })
 
-console.log(category)
+
 
 const templates = {
     milestone: function(schedule) {
@@ -29,7 +28,6 @@ const templates = {
         return '<span class="tui-full-calendar-left-content">TASK</span>';
     },
     allday: function(schedule) {
-        console.log(schedule)
         return schedule.title;
     },
     alldayTitle: function() {
@@ -261,9 +259,9 @@ $.ajax({
     }
 })
 
-calendar.on('afterRenderSchedule', function(event){
-    console.log('afterRenderSchedule')
-})
+// calendar.on('afterRenderSchedule', function(event){
+//     console.log('afterRenderSchedule')
+// })
 
 calendar.on('beforeCreateSchedule', event => {
     let calendar_id = "";
@@ -326,16 +324,39 @@ calendar.on('beforeDeleteSchedule', function(event) {
         if(result.mode) {
             calendar.deleteSchedule(schedule.id, schedule.calendarId);
             console.log(result.text)
+        } else {
+            console.log("삭제 실패")
         }
     })
 });
 
 calendar.on('beforeUpdateSchedule', function(event) {
-    console.log('beforeUpdateSchedule')
-    var schedule = event.schedule;
-    var changes = event.changes;
+    let schedule = event.schedule;
+    let changes = event.changes
 
     calendar.updateSchedule(schedule.id, schedule.calendarId, changes);
+
+    changes.id = schedule.id
+    if(changes.calendarId != null){
+        changes.calendarId = changes.calendarId
+    }
+    if(changes.isAllDay != null) {
+        changes.isAllDay = (changes.isAllDay) ? "종일" : "당일"
+    }
+    if(changes.start != null) {
+        changes.start = changes.start._date
+    }
+    if(changes.end != null) {
+        changes.end = changes.end._date
+    }
+
+    $.post('/api/calendar/update', changes, function(result){
+        if(result.mode) {
+            console.log(result.text)
+        } else {
+            console.log("수정 실패")
+        }
+    })
 });
 
 calendar.on('clickDayname', function(event) {
