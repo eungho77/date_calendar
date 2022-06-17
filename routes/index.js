@@ -31,8 +31,9 @@ router.post('/api/category', function(req, res, next) {
       param.data = rows;
 
       res.send(param)
-    } else
-      console.log(err)
+    } else {
+      console.error(err)
+    }
   })
 
   console.log("/api/category")
@@ -60,8 +61,9 @@ router.post('/api/calendar', function(req, res, next) {
       param.data = rows
 
       res.send(param)
-    } else
-      console.log(err)
+    } else {
+      console.error(err)
+    }
   })
 
   console.log("/api/calendar")
@@ -71,6 +73,7 @@ router.post('/api/calendar', function(req, res, next) {
 // calendar insert api
 router.post('/api/calendar/insert', function(req, res, next) {
   let param = {};
+  let param1 = {};
 
   mybatisMapper.createMapper([ Fileurl.url + '/mapper/calendar.xml' ]);
   const query = mybatisMapper.getStatement('calendar', 'insert', req.body, format);
@@ -81,12 +84,34 @@ router.post('/api/calendar/insert', function(req, res, next) {
       param.text = "스케줄 등록 완료"
 
       res.send(param)
-    } else
+    } else {
       console.error(err)
+    }
+  })
+
+
+
+  mybatisMapper.createMapper([ Fileurl.url + '/mapper/dashboard.xml' ]);
+  let dashboard_param = {
+    id: req.body.id,
+    content: req.body.title
+  }
+
+  const query1 = mybatisMapper.getStatement('dashboard', 'insert', dashboard_param, format);
+  const result1 = connection.query(query1, (err, rows, fields) => {
+    if(!err) {
+      param1.mode = true
+      param1.text = "dashboard 등록 완료"
+
+      console.log(param1)
+    } else {
+      console.error(err)
+    }
   })
 
   console.log("/api/calendar/insert")
   console.log(result.sql)
+  console.log(result1.sql)
 });
 
 // calendar update api
@@ -103,8 +128,9 @@ router.post('/api/calendar/update', function(req, res, next) {
       param.text = "스케줄 수정 완료"
 
       res.send(param)
-    } else
+    } else {
       console.error(err)
+    }
   })
 
   console.log("/api/calendar/update")
@@ -124,25 +150,63 @@ router.post('/api/calendar/delete', function(req, res, next) {
       param.text = "스케줄 삭제 완료"
 
       res.send(param)
-    } else
+    } else {
       console.error(err)
+    }
   })
 
   console.log("/api/calendar/delete")
   console.log(result.sql)
 });
 
-// db test
-router.get('/db/test', function(req, res, next) {
-  mybatisMapper.createMapper([ Fileurl.url + '/mapper/calendar.xml' ]);
-  const query = mybatisMapper.getStatement('date', 'insert', null, format);
+// grap select api
+router.post('/api/grap', function(req, res, next) {
+  let param = [];
 
-  connection.query(query, (err, rows, fields) => {
+  let param1 = {};
+  let data = [];
+  let count = 0;
+
+  mybatisMapper.createMapper([ Fileurl.url + '/mapper/grap.xml' ]);
+  const query = mybatisMapper.getStatement('grap', 'select', req.body, format);
+
+  const result = connection.query(query, (err, rows, fields) => {
     if(!err) {
-      res.send(rows)
-    } else
-      res.send(err)
-    })
+      for(let row of rows){
+        const location = row.location.split(", ")
+        for(let data of location){
+          param[count] = data;
+
+          count++;
+        }
+      }
+
+      const location = param.reduce((acc, cur) => {
+        acc.set(cur, (acc.get(cur) || 0) + 1);
+        return acc;
+      }, new Map());
+
+      for(let [key, value] of location.entries()){
+        param1 = {
+          location : key,
+          total : value
+        }
+
+        data.push(param1)
+      }
+
+      data.sort(function(a, b) {
+        return b.total - a.total
+      })
+
+      res.send(data)
+    } else {
+      console.error(err)
+    }
+  })
+
+  console.log("/api/calendar/delete")
+  console.log(result.sql)
 });
 
 module.exports = router;
