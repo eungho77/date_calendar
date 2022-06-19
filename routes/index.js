@@ -162,8 +162,9 @@ router.post('/api/calendar/delete', function(req, res, next) {
 // grap select api
 router.post('/api/grap', function(req, res, next) {
   let param = [];
-
   let param1 = {};
+  let param2 = {};
+
   let data = [];
   let count = 0;
 
@@ -199,7 +200,23 @@ router.post('/api/grap', function(req, res, next) {
         return b.total - a.total
       })
 
-      res.send(data)
+      if(data.length >= 1) {
+        let top6 = [];
+
+        for(let i=0; i<data.length; i++) {
+          if(i < 5) {
+            top6.push(data[i])
+          }
+        }
+
+        param2.mode = true
+        param2.result = top6
+      } else {
+        param2.mode = false
+        param2.result = "데이터 조회 실패"
+      }
+
+      res.send(param2)
     } else {
       console.error(err)
     }
