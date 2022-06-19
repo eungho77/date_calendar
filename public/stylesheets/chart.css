@@ -1,3 +1,12 @@
 #chart {
     margin-top: 50px;
 }
+
+#chart > div {
+    width: 600px;
+    height: 600px;
+}
+
+#chart > div > h3#title {
+    text-align: center;
+}
