@@ -1,3 +1,76 @@
 body {
   padding: 50px;
 }
+
+#wrap {
+  width: 100%;
+  margin: auto;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#header {
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  align-items: center;
+  padding: 10px;
+  border: 1px gray solid;
+}
+
+#main {
+  display: flex;
+  margin-top: 10px;
+  height: 700px;
+}
+
+#footer {
+  margin-top: 10px;
+  height: 100px;
+  text-align: left;
+  border: 1px gray solid;
+  pading: 10px;
+}
+
+#content {
+  flex-shrink: 0;
+  word-break: break-all;
+  border: 1px gray solid;
+  padding: 10px;
+}
+
+#date {
+  display: flex;
+  justify-content: space-evenly;
+  font-weight: bold;
+  font-size: 1.5em;
+  padding: 10px;
+}
+
+#calendar {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.memo {
+  width: 100%;
+  text-align: right;
+}
+
+textarea {
+  width: 100%;
+  height: 580px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: solid 2px #1E90FF;
+  border-radius: 5px;
+  font-size: 16px;
+  resize: none;
+}
+
+#content:nth-child(1) { flex-grow: 2; width: 500px; margin-right: 5px; }
+#content:nth-child(2) { flex-grow: 1; width: 100px; margin-left: 5px; text-align: left; }
+
+.item:nth-child(1) { flex-grow: 1; display: flex; align-items: stretch; font-weight: bold; font-size: 25px; }
+.item:nth-child(1) > button { margin-left: 10px; font-size: 25px; }
+.item:nth-child(2) { flex-grow: 1; display: inline-flex; flex-direction: row-reverse; font-size: 25px; }

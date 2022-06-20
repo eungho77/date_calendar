@@ -1,9 +1,14 @@
-<div id="calendar">
-    <!--데이트 캘린더-->
-    <%- include('../layout/calendar.ejs')%>
+<div id="wrap">
+    <div id="header">
+        <%- include('../_header/header.ejs')%>
+    </div>
+    <div id="main">
+        <%- include('../_main/main.ejs')%>
+    </div>
+    <div id="footer">
+        <%- include('../_footer/footer.ejs')%>
+    </div>
 </div>
-
-<div id="chart">
-    <!--차트-->
-    <%- include('../layout/chart.ejs')%>
+<div style="width: 400px; height: 400px">
+    <%- include('../_layout/chart.ejs')%>
 </div>
