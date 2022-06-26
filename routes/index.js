@@ -89,8 +89,6 @@ router.post('/api/calendar/insert', function(req, res, next) {
     }
   })
 
-
-
   mybatisMapper.createMapper([ Fileurl.url + '/mapper/dashboard.xml' ]);
   let dashboard_param = {
     id: req.body.id,
@@ -222,7 +220,31 @@ router.post('/api/grap', function(req, res, next) {
     }
   })
 
-  console.log("/api/calendar/delete")
+  console.log("/api/grap")
+  console.log(result.sql)
+});
+
+// grap select api
+router.post('/api/memo', function(req, res, next) {
+  let param = {}
+
+  mybatisMapper.createMapper([ Fileurl.url + '/mapper/memo.xml' ])
+  const query = mybatisMapper.getStatement('memo', 'select', req.body, format)
+
+  const result = connection.query(query, (err, rows, fields) => {
+    if(!err) {
+      param.mode = true
+      param.result = rows[0]
+
+      console.log(rows)
+
+      res.send(param)
+    } else {
+      console.error(err)
+    }
+  });
+
+  console.log("/api/memo")
   console.log(result.sql)
 });
 

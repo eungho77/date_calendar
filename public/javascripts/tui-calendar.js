@@ -12,8 +12,6 @@ $.ajax({
     }
 })
 
-
-
 const templates = {
     milestone: function(schedule) {
         return '<span class="calendar-font-icon ic-milestone-b"></span> <span style="background-color: ' + schedule.bgColor + '">' + schedule.title + '</span>';
@@ -373,4 +371,18 @@ calendar.on('clickMore', function(event) {
 
 calendar.on('clickTimezonesCollapseBtn', function(timezonesCollapsed) {
     console.log('clickTimezonesCollapseBtn', timezonesCollapsed);
+});
+
+calendar.on('clickSchedule', function(event) {
+    const schedule = event.schedule;
+
+    const param = {
+        id: schedule.id
+    }
+
+    $.post('/api/memo', param, function(data){
+        if(data.mode) {
+            cal.$el.memo.text(data.result.content)
+        }
+    })
 });
