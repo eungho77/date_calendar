@@ -11,7 +11,7 @@
     </select>
 
     <insert id="insert">
-        insert into dashboard (id) values (#{id})
+        insert into dashboard values (#{id}, #{content})
     </insert>
 
     <select id="update">

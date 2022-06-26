@@ -68,26 +68,8 @@ router.post('/api/calendar/insert', function(req, res, next) {
     }
   })
 
-  mybatisMapper.createMapper([ Fileurl.url + '/mapper/dashboard.xml' ]);
-  let dashboard_param = {
-    id: req.body.id
-  }
-
-  const query1 = mybatisMapper.getStatement('dashboard', 'insert', dashboard_param, format);
-  const result1 = connection.query(query1, (err, rows, fields) => {
-    if(!err) {
-      param1.mode = true
-      param1.text = "dashboard 등록 완료"
-
-      console.log(param1)
-    } else {
-      console.error(err)
-    }
-  })
-
   console.log("/api/calendar/insert")
   console.log(result.sql)
-  console.log(result1.sql)
 });
 
 // calendar update api

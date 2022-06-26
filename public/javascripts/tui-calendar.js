@@ -306,20 +306,10 @@ calendar.on('beforeCreateSchedule', event => {
         if(result.mode) {
             calendar.createSchedules([schedule]);
             console.log(result.text)
-
-            $.post('/dashboard/api/insert', { id: param.id }, function(result){
-                if(result.mode) {
-                    console.log("성공")
-                } else {
-                    console.log("등록 실패")
-                }
-            })
         } else {
             console.log("등록 실패")
         }
     })
-
-
 });
 
 calendar.on('beforeDeleteSchedule', function(event) {
@@ -385,6 +375,25 @@ calendar.on('clickTimezonesCollapseBtn', function(timezonesCollapsed) {
 
 calendar.on('clickSchedule', function(event) {
     const schedule = event.schedule;
+    let memo = "";
+
+    $.ajax({
+        url : '/dashboard/api/select',
+        async : false,         // false 일 경우 동기 요청으로 변경
+        type : 'POST',   // POST, GET, PUT
+        data : {id: schedule.id },
+        dataType : 'json'          // text, xml, json, script, html
+    }).done((data) => {
+        if(data.mode) {
+            memo = data.result
+        }
+    })
+
+    if(memo != null) {
+        cal.$el.memo.text(memo.content)
+    } else {
+        cal.$el.memo.text("");
+    }
 
     cal.$el.memo_save.click(function () {
         const param = {
@@ -392,19 +401,22 @@ calendar.on('clickSchedule', function(event) {
             content: cal.$el.memo.val()
         }
 
-        alert('할일 저장 완료')
-        $.post('/dashboard/api/update', param, function(data) {
-            if(data.mode) {
-                alert('할일 저장 완료')
-            } else {
-                console.log("메모 수정 실패")
-            }
-        })
-    })
-
-    $.post('/dashboard/api/select', { id: schedule.id }, function(data){
-        if(data.mode) {
-            cal.$el.memo.text(data.result.content)
+        if(memo != null) {
+            $.post('/dashboard/api/update', param, function (data) {
+                if (data.mode) {
+                    alert('할일 수정 완료')
+                } else {
+                    console.log("메모 수정 실패")
+                }
+            })
+        } else {
+            $.post('/dashboard/api/insert', param, function (data) {
+                if (data.mode) {
+                    alert('할일 등록 완료')
+                } else {
+                    console.log("메모 수정 실패")
+                }
+            })
         }
     })
 });

@@ -39,7 +39,7 @@ router.post('/api/select', function(req, res, next) {
 router.post('/api/insert', function(req, res, next) {
     let param = {};
 
-    const query = mybatisMapper.getStatement('dashboard', 'insert', {id: req.body.id}, format);
+    const query = mybatisMapper.getStatement('dashboard', 'insert', req.body, format);
     const result = connection.query(query, (err, rows, fields) => {
         if(!err) {
             param.mode = true
