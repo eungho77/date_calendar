@@ -2,7 +2,7 @@ let label = []
 let total = []
 
 $.ajax({
-    url : '/api/grap',
+    url : '/grap/api/select',
     async : false,         // false 일 경우 동기 요청으로 변경
     type : 'POST',   // POST, GET, PUT
     dataType : 'json'          // text, xml, json, script, html

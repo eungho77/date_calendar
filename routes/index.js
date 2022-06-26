@@ -19,27 +19,6 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Date Calendar' })
 });
 
-// category api
-router.post('/api/category', function(req, res, next) {
-  mybatisMapper.createMapper([ Fileurl.url + '/mapper/category.xml' ])
-  const query = mybatisMapper.getStatement('category', 'select', null, format)
-  let param = {};
-
-  const result = connection.query(query, (err, rows, fields) => {
-    if(!err) {
-      param.mode = true
-      param.data = rows;
-
-      res.send(param)
-    } else {
-      console.error(err)
-    }
-  })
-
-  console.log("/api/category")
-  console.log(result.sql)
-});
-
 // calendar select api
 router.post('/api/calendar', function(req, res, next) {
   mybatisMapper.createMapper([ Fileurl.url + '/mapper/calendar.xml' ]);
@@ -91,8 +70,7 @@ router.post('/api/calendar/insert', function(req, res, next) {
 
   mybatisMapper.createMapper([ Fileurl.url + '/mapper/dashboard.xml' ]);
   let dashboard_param = {
-    id: req.body.id,
-    content: req.body.title
+    id: req.body.id
   }
 
   const query1 = mybatisMapper.getStatement('dashboard', 'insert', dashboard_param, format);
@@ -157,95 +135,6 @@ router.post('/api/calendar/delete', function(req, res, next) {
   console.log(result.sql)
 });
 
-// grap select api
-router.post('/api/grap', function(req, res, next) {
-  let param = [];
-  let param1 = {};
-  let param2 = {};
 
-  let data = [];
-  let count = 0;
-
-  mybatisMapper.createMapper([ Fileurl.url + '/mapper/grap.xml' ]);
-  const query = mybatisMapper.getStatement('grap', 'select', req.body, format);
-
-  const result = connection.query(query, (err, rows, fields) => {
-    if(!err) {
-      for(let row of rows){
-        const location = row.location.split(", ")
-        for(let data of location){
-          param[count] = data;
-
-          count++;
-        }
-      }
-
-      const location = param.reduce((acc, cur) => {
-        acc.set(cur, (acc.get(cur) || 0) + 1);
-        return acc;
-      }, new Map());
-
-      for(let [key, value] of location.entries()){
-        param1 = {
-          location : key,
-          total : value
-        }
-
-        data.push(param1)
-      }
-
-      data.sort(function(a, b) {
-        return b.total - a.total
-      })
-
-      if(data.length >= 1) {
-        let top6 = [];
-
-        for(let i=0; i<data.length; i++) {
-          if(i < 5) {
-            top6.push(data[i])
-          }
-        }
-
-        param2.mode = true
-        param2.result = top6
-      } else {
-        param2.mode = false
-        param2.result = "데이터 조회 실패"
-      }
-
-      res.send(param2)
-    } else {
-      console.error(err)
-    }
-  })
-
-  console.log("/api/grap")
-  console.log(result.sql)
-});
-
-// grap select api
-router.post('/api/memo', function(req, res, next) {
-  let param = {}
-
-  mybatisMapper.createMapper([ Fileurl.url + '/mapper/memo.xml' ])
-  const query = mybatisMapper.getStatement('memo', 'select', req.body, format)
-
-  const result = connection.query(query, (err, rows, fields) => {
-    if(!err) {
-      param.mode = true
-      param.result = rows[0]
-
-      console.log(rows)
-
-      res.send(param)
-    } else {
-      console.error(err)
-    }
-  });
-
-  console.log("/api/memo")
-  console.log(result.sql)
-});
 
 module.exports = router;

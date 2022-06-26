@@ -52,10 +52,6 @@ let cal = {
         that.$el.statistics.click(function() {
             alert('통계 준비 중입니다.')
         })
-
-        that.$el.memo_save.click(function () {
-            alert('메모 저장 준비 중입니다.')
-        })
     }
 }
 

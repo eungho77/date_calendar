@@ -1,7 +1,7 @@
 let category = ""
 
 $.ajax({
-    url : '/api/category',
+    url : '/category/api/select',
     async : false,         // false 일 경우 동기 요청으로 변경
     type : 'POST',   // POST, GET, PUT
     dataType : 'json'          // text, xml, json, script, html
@@ -306,10 +306,20 @@ calendar.on('beforeCreateSchedule', event => {
         if(result.mode) {
             calendar.createSchedules([schedule]);
             console.log(result.text)
+
+            $.post('/dashboard/api/insert', { id: param.id }, function(result){
+                if(result.mode) {
+                    console.log("성공")
+                } else {
+                    console.log("등록 실패")
+                }
+            })
         } else {
             console.log("등록 실패")
         }
     })
+
+
 });
 
 calendar.on('beforeDeleteSchedule', function(event) {
@@ -376,11 +386,23 @@ calendar.on('clickTimezonesCollapseBtn', function(timezonesCollapsed) {
 calendar.on('clickSchedule', function(event) {
     const schedule = event.schedule;
 
-    const param = {
-        id: schedule.id
-    }
+    cal.$el.memo_save.click(function () {
+        const param = {
+            id: schedule.id,
+            content: cal.$el.memo.val()
+        }
 
-    $.post('/api/memo', param, function(data){
+        alert('할일 저장 완료')
+        $.post('/dashboard/api/update', param, function(data) {
+            if(data.mode) {
+                alert('할일 저장 완료')
+            } else {
+                console.log("메모 수정 실패")
+            }
+        })
+    })
+
+    $.post('/dashboard/api/select', { id: schedule.id }, function(data){
         if(data.mode) {
             cal.$el.memo.text(data.result.content)
         }
