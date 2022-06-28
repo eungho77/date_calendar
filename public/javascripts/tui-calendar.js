@@ -306,6 +306,8 @@ calendar.on('beforeCreateSchedule', event => {
         if(result.mode) {
             calendar.createSchedules([schedule]);
             console.log(result.text)
+
+            location.reload()
         } else {
             console.log("등록 실패")
         }
@@ -395,28 +397,5 @@ calendar.on('clickSchedule', function(event) {
         cal.$el.memo.text("");
     }
 
-    cal.$el.memo_save.click(function () {
-        const param = {
-            id: schedule.id,
-            content: cal.$el.memo.val()
-        }
-
-        if(memo != null) {
-            $.post('/dashboard/api/update', param, function (data) {
-                if (data.mode) {
-                    alert('할일 수정 완료')
-                } else {
-                    console.log("메모 수정 실패")
-                }
-            })
-        } else {
-            $.post('/dashboard/api/insert', param, function (data) {
-                if (data.mode) {
-                    alert('할일 등록 완료')
-                } else {
-                    console.log("메모 수정 실패")
-                }
-            })
-        }
-    })
+    cal.$el.memo.attr("id", schedule.id)
 });
