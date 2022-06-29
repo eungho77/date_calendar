@@ -15,16 +15,40 @@ let cal = {
         memo: $('textarea'),
 
         // text
-        calendar_date: $('span[id=renderRange]')
+        calendar_date: $('span[id=renderRange]'),
+
+        // table
+        tbody_region: $('tbody[id=region]')
 
     },
     init: function() {
-        this.event();
-
         let today = new Date(calendar._renderDate._date)
         this.$el.calendar_date.text(today.getFullYear() + "년 " + (today.getMonth() + 1) + "월")
 
         this.$el.memo.text("")
+
+        this.event();
+        this.table();
+    },
+    table: function() {
+        that = this;
+
+        let tbody = "";
+        let count = 1;
+        $.post('/grap/api/select/region', function(data){
+            if(data.mode) {
+                for(let a of data.result) {
+                    tbody = "<tr>"
+                    tbody += "<td>" + count + "</td>"
+                    tbody += "<td>" + a.location + "</td>"
+                    tbody += "<td>" + a.total + "</td>"
+                    tbody += "</tr>"
+
+                    that.$el.tbody_region.append(tbody)
+                    count++
+                }
+            }
+        })
     },
     event: function() {
         let that = this;

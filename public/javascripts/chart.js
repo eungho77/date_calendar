@@ -1,8 +1,8 @@
-let label = []
-let total = []
+let zone_label = []
+let zone_total = []
 
 $.ajax({
-    url : '/grap/api/select',
+    url : '/grap/api/select/zone/top15',
     async : false,         // false 일 경우 동기 요청으로 변경
     type : 'POST',   // POST, GET, PUT
     dataType : 'json'          // text, xml, json, script, html
@@ -11,8 +11,8 @@ $.ajax({
         let count = 0;
 
         for(let a of data.result){
-            label[count] = a.location
-            total[count] = a.total
+            zone_label[count] = a.location
+            zone_total[count] = a.total
 
             count++;
         }
@@ -22,13 +22,12 @@ $.ajax({
     }
 })
 
-const ctx = $('#myChart');
-const myChart = new Chart(ctx, {
+const myChart = new Chart($('#zone'), {
     type: 'polarArea',
     data: {
-        labels: label,
+        labels: zone_label,
         datasets: [{
-            data: total,
+            data: zone_total,
             backgroundColor: [
                 'rgb(255, 99, 132)',
                 'rgb(75, 192, 192)',

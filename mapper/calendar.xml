@@ -13,7 +13,7 @@
         insert into calendar values (#{id}, #{calendarId}, #{category}, #{title}, #{location}, #{start}, #{end}, #{isAllDay})
     </insert>
 
-    <insert id="update">
+    <update id="update">
         update calendar
         <set>
             <if test="calendarId != ''" >
@@ -39,7 +39,7 @@
             </if>
         </set>
         where id = #{id}
-    </insert>
+    </update>
 
     <delete id="delete">
         delete from calendar where id = #{id}

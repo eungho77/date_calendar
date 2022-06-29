@@ -115,8 +115,6 @@ router.post('/api/calendar/delete', function(req, res, next) {
 
   console.log("/api/calendar/delete")
   console.log(result.sql)
-});
-
-
+})
 
 module.exports = router;
