@@ -49,10 +49,6 @@ let cal = {
             that.$el.calendar_date.text(today.getFullYear() + "년 " + (today.getMonth() + 1) + "월")
         })
 
-        that.$el.statistics.click(function() {
-            alert('통계 준비 중입니다.')
-        })
-
         that.$el.memo_save.click(function () {
             let memo = "";
 

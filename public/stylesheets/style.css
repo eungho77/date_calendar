@@ -68,6 +68,11 @@ textarea {
   resize: none;
 }
 
+#title {
+  font-weight: bold;
+  text-align: center;
+}
+
 #content:nth-child(1) { flex-grow: 2; width: 500px; margin-right: 5px; }
 #content:nth-child(2) { flex-grow: 1; width: 100px; margin-left: 5px; text-align: left; }
 
