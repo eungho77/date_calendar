@@ -392,9 +392,9 @@ calendar.on('clickSchedule', function(event) {
     })
 
     if(memo != null) {
-        cal.$el.memo.text(memo.content)
+        cal.$el.memo.val(memo.content)
     } else {
-        cal.$el.memo.text("");
+        cal.$el.memo.val("");
     }
 
     cal.$el.memo.attr("id", schedule.id)

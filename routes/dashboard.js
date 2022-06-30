@@ -24,8 +24,6 @@ router.post('/api/select', function(req, res, next) {
             param.mode = true
             param.result = rows[0]
 
-            console.log(rows)
-
             res.send(param)
         } else {
             console.error(err)
@@ -36,43 +34,52 @@ router.post('/api/select', function(req, res, next) {
     console.log(result.sql)
 });
 
-router.post('/api/insert', function(req, res, next) {
-    let param = {};
+router.post('/api/add', function(req, res, next) {
+    let param = {}
 
-    const query = mybatisMapper.getStatement('dashboard', 'insert', req.body, format);
-    const result = connection.query(query, (err, rows, fields) => {
+    const query_select = mybatisMapper.getStatement('dashboard', 'select', req.body, format)
+    const query_insert = mybatisMapper.getStatement('dashboard', 'insert', req.body, format)
+    const query_update = mybatisMapper.getStatement('dashboard', 'update', req.body, format)
+
+    connection.query(query_select, (err, rows, fields) => {
         if(!err) {
-            param.mode = true
-            param.text = "dashboard 등록 완료"
+            if(!rows[0]) {
+                const result = connection.query(query_insert, (err, rows, fields) => {
+                    if(!err) {
+                        param.mode = true
+                        param.result = "할일 추가 완료"
+                    } else {
+                        param.mode = false
+                        param.result = "할일 추가 실패"
 
-            console.log(param)
+                        console.error(err)
+                    }
+                    res.send(param)
+                })
+
+                console.log("할일 추가 >> /dashboard/api/add")
+                console.log(result.sql)
+            } else {
+                const result = connection.query(query_update, (err, rows, fields) => {
+                    if(!err) {
+                        param.mode = true
+                        param.result = "할일 수정 완료"
+                    } else {
+                        param.mode = false
+                        param.result = "할일 수정 실패"
+
+                        console.error(err)
+                    }
+                    res.send(param)
+                })
+
+                console.log("할일 수정 >> /dashboard/api/add")
+                console.log(result.sql)
+            }
         } else {
             console.error(err)
         }
-    })
-
-    console.log("/dashboard/api/insert")
-    console.log(result.sql)
-});
-
-router.post('/api/update', function(req, res, next) {
-    let param = {};
-    console.log(req.body)
-
-    const query = mybatisMapper.getStatement('dashboard', 'update', req.body, format);
-    const result = connection.query(query, (err, rows, fields) => {
-        if(!err) {
-            param.mode = true
-            param.text = "dashboard 수정 완료"
-
-            console.log(param)
-        } else {
-            console.error(err)
-        }
-    })
-
-    console.log("/dashboard/api/update")
-    console.log(result.sql)
+    });
 });
 
 module.exports = router;
