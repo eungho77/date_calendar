@@ -6,4 +6,7 @@
     "password": [DB Password],
     "database": [DB Schemas]
   }
+  "date": {
+    "start": [start_Date]
+  }
 }
