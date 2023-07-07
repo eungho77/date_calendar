@@ -7,9 +7,6 @@ let cal = {
         calendar_next: $('button[data-action=move-next]'),
         calendar_today: $('button[data-action=move-today]'),
 
-        //d-day
-        calendar_day: $('label[id=d_day]'),
-
         // 통계
         statistics: $('button[id=statistics]'),
 
@@ -32,7 +29,6 @@ let cal = {
 
         this.event()
         this.table()
-        this.day()
     },
     table: function() {
         that = this
@@ -90,18 +86,6 @@ let cal = {
                 }
             })
         })
-    },
-    day: function() {
-        const setDate = new Date('2021-10-19')
-        const now = new Date();
-
-        const Time = setDate.getTime() - now.getTime()
-        const dday = Math.abs(Time / (1000 * 60 * 60 * 24)) // 밀리터리 * 초 * 분 * 시 = 일
-
-        // 밀리터리는 1초당 1000 단위로 나타냄
-        // 시계는 1초마다 움직이므로 1000 으로 줘야함
-
-        this.$el.calendar_day.text("♥" + parseInt(dday + 1) + "♥" )
     }
 }
 

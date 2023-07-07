@@ -5,7 +5,7 @@ const Fileurl = require('./fileURL')
 
 // DB connect
 const maria = require('mysql')
-const { db_info } = require('../config.json')
+const { db_info, date } = require('../config.json')
 const connection = maria.createConnection(db_info)
 
 // sql문 작성을 위해 mapper 생성
@@ -16,7 +16,13 @@ const format = {language: "sql", indent: ''}
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Date Calendar' })
+  const setDate = new Date(date.start);
+  const now = new Date();
+
+  const time = setDate.getTime() - now.getTime()
+  const dday = Math.abs(time / (1000 * 60 * 60 * 24)) // 밀리터리 * 초 * 분 * 시 = 일
+
+  res.render('index', { title: 'Date Calendar', dday: "♥" + parseInt(dday + 1) + "♥" })
 });
 
 // calendar select api
