@@ -3,9 +3,9 @@ const Fileurl = require('./fileURL')
 const express = require("express");
 
 // DB connect
-const maria = require('mysql')
+const maria = require('mysql2')
 const { db_info } = require('../config.json')
-const connection = maria.createConnection(db_info)
+const pool = maria.createPool(db_info)
 
 // sql문 작성을 위해 mapper 생성
 const mybatisMapper = require('mybatis-mapper')
@@ -25,59 +25,66 @@ router.post('/api/select/zone/top15', function(req, res, next) {
     mybatisMapper.createMapper([ Fileurl.url + '/mapper/grap.xml' ]);
     const query = mybatisMapper.getStatement('grap', 'select', req.body, format);
 
-    const result = connection.query(query, (err, rows, fields) => {
-        if(!err) {
-            for(let row of rows){
-                const location = row.location.split(", ")
-                for(let data of location){
-                    param[count] = data;
+    pool.getConnection(function (err, conn) {
+        const result = conn.query(query, (err, rows, fields) => {
+            if(!err) {
+                for(let row of rows){
+                    const location = row.location.split(", ")
+                    for(let data of location){
+                        param[count] = data;
 
-                    count++;
-                }
-            }
-
-            const location = param.reduce((acc, cur) => {
-                acc.set(cur, (acc.get(cur) || 0) + 1);
-                return acc;
-            }, new Map());
-
-            for(let [key, value] of location.entries()){
-                param1 = {
-                    location : key,
-                    total : value
-                }
-
-                data.push(param1)
-            }
-
-            data.sort(function(a, b) {
-                return b.total - a.total
-            })
-
-            if(data.length >= 1) {
-                let top6 = [];
-
-                for(let i=0; i<data.length; i++) {
-                    if(i < 5) {
-                        top6.push(data[i])
+                        count++;
                     }
                 }
 
-                param2.mode = true
-                param2.result = top6
-            } else {
-                param2.mode = false
-                param2.result = "데이터 조회 실패"
-            }
+                const location = param.reduce((acc, cur) => {
+                    acc.set(cur, (acc.get(cur) || 0) + 1);
+                    return acc;
+                }, new Map());
 
-            res.send(param2)
-        } else {
-            console.error(err)
-        }
+                for(let [key, value] of location.entries()){
+                    param1 = {
+                        location : key,
+                        total : value
+                    }
+
+                    data.push(param1)
+                }
+
+                data.sort(function(a, b) {
+                    return b.total - a.total
+                })
+
+                if(data.length >= 1) {
+                    let top6 = [];
+
+                    for(let i=0; i<data.length; i++) {
+                        if(i < 5) {
+                            top6.push(data[i])
+                        }
+                    }
+
+                    param2.mode = true
+                    param2.result = top6
+                } else {
+                    param2.mode = false
+                    param2.result = "데이터 조회 실패"
+                }
+
+                res.send(param2)
+            } else {
+                console.error(err)
+            }
+        })
+
+        console.log("/api/grap")
+        console.log(result.sql)
+
+        pool.releaseConnection(conn)
     })
 
-    console.log("/api/grap")
-    console.log(result.sql)
+
+
 });
 
 router.post('/api/select/region', function(req, res, next) {
@@ -91,57 +98,61 @@ router.post('/api/select/region', function(req, res, next) {
     mybatisMapper.createMapper([ Fileurl.url + '/mapper/grap.xml' ]);
     const query = mybatisMapper.getStatement('grap', 'select', req.body, format);
 
-    const result = connection.query(query, (err, rows, fields) => {
-        if(!err) {
-            for(let row of rows){
-                const location = row.location.split(", ")
-                for(let data of location){
-                    param[count] = data.split(" ")[0];
+    pool.getConnection(function (err, conn) {
+        const result = conn.query(query, (err, rows, fields) => {
+            if(!err) {
+                for(let row of rows){
+                    const location = row.location.split(", ")
+                    for(let data of location){
+                        param[count] = data.split(" ")[0];
 
-                    count++;
-                }
-            }
-
-            const location = param.reduce((acc, cur) => {
-                acc.set(cur, (acc.get(cur) || 0) + 1);
-                return acc;
-            }, new Map());
-
-            for(let [key, value] of location.entries()){
-                param1 = {
-                    location : key,
-                    total : value
+                        count++;
+                    }
                 }
 
-                data.push(param1)
-            }
+                const location = param.reduce((acc, cur) => {
+                    acc.set(cur, (acc.get(cur) || 0) + 1);
+                    return acc;
+                }, new Map());
 
-            data.sort(function(a, b) {
-                return b.total - a.total
-            })
+                for(let [key, value] of location.entries()){
+                    param1 = {
+                        location : key,
+                        total : value
+                    }
 
-            if(data.length >= 1) {
-                let top6 = [];
-
-                for(let i=0; i<data.length; i++) {
-                    top6.push(data[i])
+                    data.push(param1)
                 }
 
-                param2.mode = true
-                param2.result = top6
+                data.sort(function(a, b) {
+                    return b.total - a.total
+                })
+
+                if(data.length >= 1) {
+                    let top6 = [];
+
+                    for(let i=0; i<data.length; i++) {
+                        top6.push(data[i])
+                    }
+
+                    param2.mode = true
+                    param2.result = top6
+                } else {
+                    param2.mode = false
+                    param2.result = "데이터 조회 실패"
+                }
+
+                res.send(param2)
             } else {
-                param2.mode = false
-                param2.result = "데이터 조회 실패"
+                console.error(err)
             }
+        })
 
-            res.send(param2)
-        } else {
-            console.error(err)
-        }
+        console.log("/api/grap")
+        console.log(result.sql)
+
+        pool.releaseConnection(conn)
     })
-
-    console.log("/api/grap")
-    console.log(result.sql)
 });
 
 module.exports = router;
